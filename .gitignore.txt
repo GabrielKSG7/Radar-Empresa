@@ -1,0 +1,11 @@
+# Ignorar ambiente virtual
+.venv/
+__pycache__/
+
+# Ignorar dados e banco de dados
+data/
+
+# Ignorar pastas geradas automaticamente pelo dbt
+dbt_radar/logs/
+dbt_radar/target/
+dbt_radar/dbt_packages/
