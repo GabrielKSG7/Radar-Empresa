@@ -1,9 +1,7 @@
-# Arquivo: src/ingestao.py
 import httpx
 import duckdb
 import os
 
-# Confirme se a URL termina com .zip
 URL_CNAE = "https://dadosabertos.rfb.gov.br/CNPJ/Cnaes.zip"
 RAW_DIR = "data/raw"
 ZIP_PATH = os.path.join(RAW_DIR, "Cnaes.zip")
@@ -12,8 +10,7 @@ DB_PATH = "data/radar.duckdb"
 def main():
     print(f"Baixando {URL_CNAE}...")
     
-    # Adicionamos timeout=120.0 para dar tempo de o site da Receita responder
-    # verify=False ignora erros de certificado SSL (comuns em sites .gov)
+
     try:
         with httpx.stream("GET", URL_CNAE, verify=False, timeout=120.0) as response:
             response.raise_for_status()
