@@ -1,0 +1,6 @@
+dbt_radar:
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/radar.duckdb # Aponta para o DuckDB que o nosso Python criou
+  target: dev

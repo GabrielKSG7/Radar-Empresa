@@ -1,15 +1,11 @@
-Welcome to your new dbt project!
+# Radar B2B 🎯
 
-### Using the starter project
+**DADO -> EVENTO -> CONTEXTO -> ICP -> SCORE -> OPORTUNIDADE -> AÇÃO**
 
-Try running the following commands:
-- dbt run
-- dbt test
+O Radar B2B é um motor de inteligência comercial. Ele não é um buscador de CNPJs. Ele monitora a base pública da Receita Federal para detectar **mudanças no universo empresarial** (ex: empresas abertas, alteração de quadro societário), cruza esses eventos com um Perfil de Cliente Ideal (ICP) e entrega Oportunidades pontuadas e enriquecidas por IA para times de vendas (BPO, Contabilidades, Consultorias).
 
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+## Arquitetura (MVP Local / R$ 0)
+- **Ingestão:** Python (`httpx`, `polars`)
+- **Storage/DW:** DuckDB (Out-of-core process, `.parquet`)
+- **Transformação (Medallion):** dbt-core
+- **Enriquecimento:** LLM local (Ollama) / Free Tier estruturado com `Pydantic`

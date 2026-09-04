@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: rfb_bronze
+    schema: bronze
+    tables:
+      - name: cnaes
+      - name: municipios
+      - name: estabelecimentos
