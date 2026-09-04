@@ -1,11 +1,18 @@
-# Ignorar ambiente virtual
-.venv/
+# Python / Ambientes Virtuais
 __pycache__/
+.venv/
+.uv/
+.env
 
-# Ignorar dados e banco de dados
+# Dados e Banco de Dados (NUNCA subir para o repositório)
 data/
+*.csv
+*.zip
+*.parquet
+*.duckdb
+*.db
 
-# Ignorar pastas geradas automaticamente pelo dbt
-dbt_radar/logs/
-dbt_radar/target/
-dbt_radar/dbt_packages/
+# dbt
+target/
+dbt_packages/
+logs/
