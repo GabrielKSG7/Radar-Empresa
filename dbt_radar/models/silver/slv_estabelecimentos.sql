@@ -1,22 +1,38 @@
 {{ config(materialized='table') }}
 
-with source as (
-    select * from {{ source('rfb_bronze', 'estabelecimentos') }}
+-- Silver: tipagem, limpeza e chaves consistentes.
+-- Mantém TODAS as competências: o diff entre elas é a base do Event Store.
+
+with fonte as (
+    select * from {{ ref('brz_estabelecimentos') }}
 )
 
 select
-    -- 1. Unificando o CNPJ (14 dígitos com zeros à esquerda)
-    lpad(cnpj_basico::VARCHAR, 8, '0') || lpad(cnpj_ordem::VARCHAR, 4, '0') || lpad(cnpj_dv::VARCHAR, 2, '0') as cnpj,
+    -- Chave de negócio: CNPJ completo, 14 dígitos com zeros à esquerda
+    lpad(cnpj_basico, 8, '0')
+      || lpad(cnpj_ordem, 4, '0')
+      || lpad(cnpj_dv,    2, '0')                    as cnpj,
+    lpad(cnpj_basico, 8, '0')                        as cnpj_basico,
+    competencia,
 
-    -- 2. Colunas de Domínio
+    nullif(trim(nome_fantasia), '')                  as nome_fantasia,
     identificador_matriz_filial,
     situacao_cadastral,
-    cnae_principal,
+    lpad(cnae_principal, 7, '0')                     as cnae_principal,
     id_municipio,
     uf,
+    nullif(trim(bairro), '')                         as bairro,
+    nullif(trim(cep), '')                            as cep,
+    -- Contato: mantido para viabilizar a ação comercial. Ver nota de LGPD
+    -- no README — dado público, finalidade registrada, sem enriquecimento
+    -- de pessoa física.
+    nullif(trim(correio_eletronico), '')             as email,
+    nullif(trim(ddd_1 || telefone_1), '')            as telefone,
 
-    -- 3. Tipagem de Data (Convertendo YYYYMMDD string para tipo DATE)
-    -- Usamos try_strptime para que, se houver '00000000' ou sujeira, ele retorne NULL em vez de quebrar
-    try_strptime(data_inicio_atividade::VARCHAR, '%Y%m%d')::DATE as data_inicio_atividade
+    -- try_strptime devolve NULL em vez de quebrar com '00000000' ou sujeira
+    try_strptime(data_inicio_atividade, '%Y%m%d')::date  as data_inicio_atividade,
+    try_strptime(data_situacao_cadastral, '%Y%m%d')::date as data_situacao_cadastral
 
-from source
+from fonte
+where cnpj_basico is not null
+  and trim(cnpj_basico) <> ''

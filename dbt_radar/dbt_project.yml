@@ -1,16 +1,7 @@
-
-# Name your project! Project names should contain only lowercase characters
-# and underscores. A good package name should reflect your organization's
-# name or the intended use of these models
 name: 'dbt_radar'
-version: '1.0.0'
-
-# This setting configures which "profile" dbt uses for this project.
+version: '2.0.0'
 profile: 'dbt_radar'
 
-# These configurations specify where dbt should look for different types of files.
-# The `model-paths` config, for example, states that models in this project can be
-# found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -18,18 +9,31 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-clean-targets:         # directories to be removed by `dbt clean`
+clean-targets:
   - "target"
   - "dbt_packages"
 
+vars:
+  # Competências comparadas pelo diff. Sobrescreva com --vars na execução.
+  competencia_atual: '2026-08'
+  competencia_anterior: '2026-07'
+  # ICP ativo (arquivo em config/icp/<nome>.yaml, carregado como seed).
+  icp_ativo: 'contabilidade_sul_mg'
+  # Janela de recência considerada para a pontuação.
+  janela_recencia_dias: 45
 
-# Configuring models
-# Full documentation: https://docs.getdbt.com/docs/configuring-models
-
-# In this example config, we tell dbt to build all models in the example/
-# directory as views. These settings can be overridden in the individual model
-# files using the `{{ config(...) }}` macro.
 models:
   dbt_radar:
-    # Config indicated by + and applies to all files under models/dbt_radar/
-    +materialized: view
+    bronze:
+      +materialized: view
+      +schema: bronze
+    silver:
+      +materialized: table
+      +schema: silver
+    gold:
+      +materialized: table
+      +schema: gold
+
+seeds:
+  dbt_radar:
+    +schema: config

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+.env
+
+# Dados — NUNCA versionar
+data/
+*.csv
+*.zip
+*.parquet
+*.duckdb
+*.db
+
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml

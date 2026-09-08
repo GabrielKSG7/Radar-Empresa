@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: gld_icp_matches
+    description: Eventos que aderem ao ICP ativo (config-driven).
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: cnae_prioridade
+        data_tests:
+          - accepted_values:
+              values: ['primario','secundario']
+              config:
+                severity: error
+
+  - name: gld_opportunities
+    description: Oportunidades pontuadas, com fatores de score auditáveis.
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: opportunity_score
+        data_tests:
+          - not_null
+      - name: razao_social
+        description: >
+          Nome da empresa. Alerta (não erro) se nulo — indica falha no join
+          com slv_empresas, que deixaria o digest sem identificar a empresa.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

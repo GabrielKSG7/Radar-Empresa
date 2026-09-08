@@ -1,0 +1,55 @@
+# Perfil de Cliente Ideal (ICP)
+# O ICP é CONFIGURAÇÃO, não código. Adicionar um cliente novo = novo arquivo
+# aqui, sem tocar em SQL. Carregado para o banco por scripts/carregar_icp.py.
+
+nome: contabilidade_sul_mg
+descricao: >
+  Escritório de contabilidade e BPO financeiro atendendo o Sul de Minas.
+  Busca empresas recém-abertas que ainda estão estruturando obrigações
+  contábeis e fiscais.
+
+# Serviço oferecido — usado para dar contexto à IA na explicação/ação.
+oferta: "Contabilidade e BPO financeiro para empresas em início de operação"
+
+geografia:
+  uf: [MG]
+  municipios: [VARGINHA, TRES CORACOES, ELOI MENDES]
+
+# ATENÇÃO: casamos por CÓDIGO CNAE, nunca por texto da descrição.
+# A versão anterior usava `ilike '%ti%'`, que casa com "A-TI-vidades" —
+# presente em boa parte dos CNAEs brasileiros — tornando o filtro inócuo.
+cnae:
+  # Alvo primário: setores onde a oferta tem maior aderência
+  primarios:
+    - '5611201'   # Restaurantes e similares
+    - '4781400'   # Comércio varejista de vestuário
+    - '4120400'   # Construção de edifícios
+    - '8630501'   # Atividade médica ambulatorial
+    - '4930202'   # Transporte rodoviário de carga
+  # Alvo secundário: aderência menor, ainda relevante
+  secundarios:
+    - '6201501'   # Desenvolvimento de software
+    - '9602501'   # Cabeleireiros e estética
+  # Exclusões: concorrentes diretos do próprio escritório
+  excluidos:
+    - '6920601'   # Atividades de contabilidade
+    - '6920602'   # Consultoria e auditoria contábil
+
+porte:
+  alvo: ['01', '03']        # Micro Empresa e EPP
+
+eventos: [NEW_COMPANY]
+
+recencia_dias: 45
+
+# Pesos do Opportunity Score (soma máxima = 100).
+# Hipóteses iniciais; calibrar com dados reais de conversão.
+pesos:
+  recencia: 30
+  cnae: 25
+  porte: 15
+  localizacao: 10
+  capital: 10
+  contexto: 10
+
+score_minimo: 40           # abaixo disso não entra no digest

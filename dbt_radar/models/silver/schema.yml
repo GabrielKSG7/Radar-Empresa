@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: slv_estabelecimentos
+    description: Estabelecimentos tipados e limpos, todas as competências.
+    columns:
+      - name: cnpj
+        description: CNPJ completo, 14 dígitos.
+        data_tests:
+          - not_null
+      - name: competencia
+        data_tests:
+          - not_null
+      - name: situacao_cadastral
+        data_tests:
+          - accepted_values:
+              values: ['01','02','03','04','08']
+
+  - name: slv_empresas
+    description: Empresas (razão social, capital, porte) por competência.
+    columns:
+      - name: cnpj_basico
+        data_tests:
+          - not_null
+      - name: porte_descricao
+        data_tests:
+          - accepted_values:
+              values: ['Micro Empresa','Empresa de Pequeno Porte','Demais','Não informado']
+
+  - name: slv_dominios
+    description: CNAEs e municípios deduplicados pela competência mais recente.
+    columns:
+      - name: codigo
+        data_tests:
+          - not_null
+
+  - name: evt_new_company
+    description: >
+      Event Store — eventos NEW_COMPANY detectados por set difference entre
+      a competência atual e a anterior.
+    columns:
+      - name: event_id
+        description: Hash determinístico; estável entre reprocessamentos.
+        data_tests:
+          - unique
+          - not_null
+      - name: cnpj
+        data_tests:
+          - not_null
+      - name: event_type
+        data_tests:
+          - accepted_values:
+              values: ['NEW_COMPANY']
+      - name: confidence
+        data_tests:
+          - accepted_values:
+              values: ['alta','media','baixa']
+      - name: source_competence
+        data_tests:
+          - not_null

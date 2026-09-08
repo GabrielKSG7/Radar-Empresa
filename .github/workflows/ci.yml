@@ -1,0 +1,49 @@
+# CI real do Radar B2B.
+# Substitui o template padrão do GitHub (conda + environment.yml inexistente
+# + pytest sem testes), que falhava em todo push.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualidade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check src scripts tests run_pipeline.py
+
+      - name: Testes unitários
+        run: pytest -q
+
+      # Executa o pipeline de ponta a ponta com dados sintéticos.
+      # Garante que os models dbt compilam, os testes de dados passam e o
+      # digest é gerado — sem depender da infraestrutura da Receita.
+      - name: Pipeline end-to-end (fixtures sintéticas)
+        run: |
+          python scripts/gerar_fixtures.py --anterior 2026-07 --atual 2026-08
+          python run_pipeline.py \
+            --competencia 2026-08 --anterior 2026-07 \
+            --somente-local --sem-ia
+
+      - name: Publicar digest gerado
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest
+          path: data/digests/*.md

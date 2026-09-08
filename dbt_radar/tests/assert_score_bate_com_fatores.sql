@@ -1,0 +1,14 @@
+-- O score precisa ser exatamente a soma dos fatores persistidos.
+-- Garante que a explicação mostrada ao usuário não diverge do número.
+select
+    event_id,
+    opportunity_score,
+    (   json_extract(score_fatores, '$.recencia')::int
+      + json_extract(score_fatores, '$.cnae')::int
+      + json_extract(score_fatores, '$.porte')::int
+      + json_extract(score_fatores, '$.localizacao')::int
+      + json_extract(score_fatores, '$.capital')::int
+      + json_extract(score_fatores, '$.contexto')::int
+    ) as soma_fatores
+from {{ ref('gld_opportunities') }}
+where opportunity_score <> soma_fatores

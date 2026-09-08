@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: rfb
+    description: >
+      Dados Abertos do CNPJ lidos diretamente dos Parquet particionados por
+      competência (data/bronze/<tabela>/competencia=AAAA-MM/). Ler do Parquet
+      em vez de tabelas físicas mantém o Bronze reprocessável e versionado.
+    meta:
+      external_location: "read_parquet('../data/bronze/{name}/*/*.parquet', hive_partitioning=true)"
+    tables:
+      - name: estabelecimentos
+      - name: empresas
+      - name: cnaes
+      - name: municipios
+
+  - name: config
+    description: Tabelas de configuração de ICP, carregadas de config/icp/*.yaml
+    schema: config
+    tables:
+      - name: icp
+      - name: icp_cnae
+      - name: icp_municipio
+      - name: icp_porte
